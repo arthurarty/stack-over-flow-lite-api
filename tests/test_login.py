@@ -29,5 +29,8 @@ def test_user_creation(client):
 	"password":"test"})
     assert b'test@test.com' in resp.data
 
-
-    
+def test_user_login(client):
+    resp = post_json(client, '/auth/signin', { 
+	"email": "test@test.com",
+	"password":"test"})
+    assert b'Successful login' in resp.data
