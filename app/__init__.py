@@ -55,7 +55,9 @@ def create_app(config_name):
             # Identity can be any data that is json serializable
             user_id = db_conn.return_id(email)
             access_token = create_access_token(identity=user_id[0])
-            return jsonify(access_token=access_token), 200
+            output = {'message':'Successful login'}
+            access_token_output = {'access_token':"%s" % (access_token)}
+            return jsonify(output, access_token_output), 200
     
         output = {"msg": "Bad username or password"}
         resp = jsonify(output)
