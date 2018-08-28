@@ -78,7 +78,7 @@ class Database:
         self.create_table('answers', "answer_id SERIAL PRIMARY KEY," + 
         "question_id int NOT NULL REFERENCES questions(question_id)," + 
         "user_id int NOT NULL REFERENCES users(user_id), title text " + 
-        "NOT NULL, created_at date NOT NULL")
+        "NOT NULL, preferred boolean, created_at date NOT NULL")
 
     def drop_all_tables(self):
         self.drop_table("answers")
