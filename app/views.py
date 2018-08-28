@@ -8,6 +8,7 @@ JWTManager, jwt_required, create_access_token,
 get_jwt_identity    
 )
 from app import create_app
+from flasgger import swag_from
 
 app = create_app()
 
@@ -15,6 +16,7 @@ db_conn = Database()
 empty_field = {'message': 'A field is empty'}
 
 @app.route('/auth/signup', methods=['POST'])
+@swag_from('docs/register.yml')
 def add_user():
     """add user adds a user"""
     if request.json.get('email') and request.json.get('name') and request.json.get('password'):

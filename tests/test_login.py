@@ -1,12 +1,11 @@
 import http.client
 import pytest
-from app import create_app
+from app.views import app
 import psycopg2
 import json
 
 @pytest.fixture
 def client():
-    app = create_app()
     client = app.test_client()
     yield client
 
