@@ -7,6 +7,7 @@ import json
 def create_app(config_name):
     from app.models.user import User
     from app.database import Database
+    from app.models.question import Question
     from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity    
@@ -63,5 +64,16 @@ def create_app(config_name):
         resp = jsonify(output)
         resp.status_code = 200
         return resp
+
+    @app.route('/v1/questions', methods=['POST'])
+    @jwt_required
+    def add_question():
+        current_user = get_jwt_identity()
+        if request.form['title']:
+            new_question = Question(int(current_user[0]), request.form['title'])
+            return new_question.insert_new_record()
+        
+        output = empty_field
+        return jsonify(output), 400
 
     return app
