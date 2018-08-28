@@ -81,5 +81,18 @@ def create_app(config_name):
     def fetch_all_questions():
         output = db_conn.query_all("questions")
         return jsonify(output), 200
-        
+    
+    @app.route('/v1/questions/<int:question_id>/')
+    @jwt_required
+    def fetch_single_question(question_id):
+        """fetch_single_questions method returns single question with input being of the type int. 
+        """
+        output = db_conn.query_single_row("questions", "question_id", question_id)
+        if not output:
+            output = {
+                'message': 'Question Not Found: ' + request.url,
+            }
+            return jsonify(output), 404
+
+        return jsonify(output), 200
     return app

@@ -52,3 +52,12 @@ def test_get_questiosn(client):
     access_token = access[1]['access_token']
     resp = client.get('/v1/questions', headers={'Authorization': 'Bearer ' + access_token})
     assert resp.status_code == 200
+
+def test_get_single_question(client):
+    resp = post_json(client, '/auth/signin', { 
+	"email": "test@test.com",
+	"password":"test"})
+    access = json_of_response(resp)
+    access_token = access[1]['access_token']
+    resp = client.get('/v1/questions/1', headers={'Authorization': 'Bearer ' + access_token})
+    assert b'title' in resp.data
