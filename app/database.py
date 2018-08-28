@@ -85,6 +85,17 @@ class Database:
         self.drop_table("questions")
         self.drop_table("users")
 
+    def delete_question(self, question_id):
+        delete_answers = "DELETE FROM answers WHERE question_id = %s" % (question_id)
+        self.cursor.execute(delete_answers)
+        delete_command = "DELETE FROM questions WHERE question_id = %s" % (question_id)
+        self.cursor.execute(delete_command)
+
+    def return_user_id_question(self, question_id):
+        user_id_command = "SELECT user_id FROM questions WHERE question_id = %s" % (question_id)
+        self.cursor.execute(user_id_command)
+        user_id = self.cursor.fetchone()
+        return user_id
+
 #db = Database()
-#db.create_all_tables()
-#db.drop_all_tables()
+#print(db.return_user_id_question(2))
