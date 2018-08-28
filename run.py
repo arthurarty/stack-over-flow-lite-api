@@ -1,6 +1,6 @@
 import os
 from app import create_app
-from app.database import Database
+from app.database_setup import set_up
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
@@ -9,4 +9,3 @@ app = create_app(config_name)
 
 if __name__ == '__main__':
     app.run()
-    
