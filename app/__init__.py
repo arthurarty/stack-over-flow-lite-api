@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import Flask, request, jsonify
 # local import
-from instance.config import app_config
+from app.config import app_config
 import json
 
 def create_app(config_name):
