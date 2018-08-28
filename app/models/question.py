@@ -29,3 +29,4 @@ class Question(Database):
                 'message': '%s' % e,
             }
             return jsonify(output), 404
+    

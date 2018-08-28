@@ -26,6 +26,18 @@ def signin(client):
     access_token = access[1]['access_token']
     return access_token
 
+def user_two(client):
+    resp = post_json(client, '/auth/signup', { 
+	"email": "user@test.com",
+    "name": "user",
+	"password":"user"})
+    resp = post_json(client, '/auth/signin', { 
+	"email": "user@test.com",
+	"password":"user"})
+    access = json_of_response(resp)
+    access_token = access[1]['access_token']
+    return access_token
+
 def test_user_creation(client):
     resp = post_json(client, '/auth/signup', { 
 	"email": "test@test.com",
@@ -46,7 +58,7 @@ def test_add_question(client):
     data=dict( title= "big man",))
     assert resp.status_code == 201
 
-def test_get_questiosn(client, signin):
+def test_get_questiosn(client):
     resp = client.get('/v1/questions', headers={'Authorization': 'Bearer ' + signin(client)})
     assert resp.status_code == 200
 
@@ -59,7 +71,13 @@ def test_post_answer(client):
     data=dict( title= "how to do this thing",))
     assert resp.status_code == 201
 
+def test_delete_question_by_another_user(client):
+    resp = client.delete('/v1/questions/1/delete', headers={'Authorization': 'Bearer ' + user_two(client)})
+    assert resp.status_code == 401
+    assert b'No rights to delete question' in resp.data
+
 def test_delete_question(client):
     resp = client.delete('/v1/questions/1/delete', headers={'Authorization': 'Bearer ' + signin(client)})
     assert resp.status_code == 200
     assert b'Question Deleted' in resp.data
+ 

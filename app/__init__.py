@@ -80,7 +80,7 @@ def create_app():
         output = db_conn.query_all("questions")
         return jsonify(output), 200
     
-    @app.route('/v1/questions/<int:question_id>/')
+    @app.route('/v1/questions/<int:question_id>/', methods=['GET'])
     @jwt_required
     def fetch_single_question(question_id):
         """fetch_single_questions method returns single question with input being of the type int. 
@@ -94,6 +94,23 @@ def create_app():
         answers = db_conn.query_all_where_id("answers", "question_id", question_id)
         return jsonify(output, answers), 200
     
+    @app.route('/v1/questions/<int:question_id>/delete', methods=['DELETE'])
+    @jwt_required
+    def delete_question(question_id):
+        """delete question and corresponding answers 
+        """
+        output = db_conn.return_user_id_question(question_id)
+        if not output:
+            output = {
+                'message': 'Question Not Found: ' + request.url,
+            }
+            return jsonify(output), 404
+        current_user = get_jwt_identity()
+        if current_user[0] in output:
+            db_conn.delete_question(question_id)
+            return jsonify({'message':'Question Deleted'}), 200
+        return jsonify({'message':'No rights to delete question'}), 401
+
     @app.route('/v1/questions/<int:question_id>/answers', methods=['POST'])
     @jwt_required
     def add_answer_to_question(question_id):
