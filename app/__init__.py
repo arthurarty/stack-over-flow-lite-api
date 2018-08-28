@@ -7,6 +7,7 @@ import json
 def create_app():
     from app.models.user import User
     from app.database import Database
+    from app.models.answer import Answer
     from app.models.question import Question
     from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -90,6 +91,19 @@ def create_app():
                 'message': 'Question Not Found: ' + request.url,
             }
             return jsonify(output), 404
+        answers = db_conn.query_all_where_id("answers", "question_id", question_id)
+        return jsonify(output, answers), 200
+    
+    @app.route('/v1/questions/<int:question_id>/answers', methods=['POST'])
+    @jwt_required
+    def add_answer_to_question(question_id):
+        """method to add answer to question"""
+        if  request.form['title']:
+            current_user = get_jwt_identity()
+            new_answer = Answer(question_id, request.form['title'], current_user[0])
+            return new_answer.insert_new_record()
 
-        return jsonify(output), 200
+        output = empty_field
+        return jsonify(output), 400
+
     return app
