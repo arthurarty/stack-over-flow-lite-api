@@ -61,3 +61,13 @@ def test_get_single_question(client):
     access_token = access[1]['access_token']
     resp = client.get('/v1/questions/1', headers={'Authorization': 'Bearer ' + access_token})
     assert b'title' in resp.data
+
+def test_post_answer(client):
+    resp = post_json(client, '/auth/signin', { 
+	"email": "test@test.com",
+	"password":"test"})
+    access = json_of_response(resp)
+    access_token = access[1]['access_token']
+    resp = client.post('/v1/questions/1/answers', headers={'Authorization': 'Bearer ' + access_token}, 
+    data=dict( title= "how to do this thing",))
+    assert resp.status_code == 201
