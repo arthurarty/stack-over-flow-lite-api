@@ -1,4 +1,4 @@
-from app.database import Database
+from database import Database
 
 def set_up():
     db = Database()
