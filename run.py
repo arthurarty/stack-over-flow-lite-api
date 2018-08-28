@@ -1,6 +1,5 @@
 import os
 from app import create_app
-import database_setup
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 

@@ -15,7 +15,6 @@ class TestingConfig(Config):
     """Configurations for Testing, with a separate test database."""
     TESTING = True
     DEBUG = True
-    DATABASE_URL = "postgresql://localhost/test_db"
 
 class StagingConfig(Config):
     """Configurations for Staging."""
