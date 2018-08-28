@@ -7,6 +7,7 @@ import json
 def create_app(config_name):
     from app.models.user import User
     from app.database import Database
+    from app.models.question import Question
     from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity    
@@ -16,7 +17,7 @@ def create_app(config_name):
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 
-    app.config['JWT_SECRET_KEY'] = 'qweAsdf12#!@fsfd'
+  
     jwt = JWTManager(app)
 
     db_conn = Database()
@@ -55,11 +56,24 @@ def create_app(config_name):
             # Identity can be any data that is json serializable
             user_id = db_conn.return_id(email)
             access_token = create_access_token(identity=user_id[0])
-            return jsonify(access_token=access_token), 200
+            output = {'message':'Successful login'}
+            access_token_output = {'access_token':"%s" % (access_token)}
+            return jsonify(output, access_token_output), 200
     
         output = {"msg": "Bad username or password"}
         resp = jsonify(output)
         resp.status_code = 200
         return resp
+
+    @app.route('/v1/questions', methods=['POST'])
+    @jwt_required
+    def add_question():
+        current_user = get_jwt_identity()
+        if request.form['title']:
+            new_question = Question(int(current_user[0]), request.form['title'])
+            return new_question.insert_new_record()
+        
+        output = empty_field
+        return jsonify(output), 400
 
     return app
