@@ -6,7 +6,7 @@ import json
 
 @pytest.fixture
 def client():
-    app = create_app(config_name="testing")
+    app = create_app()
     client = app.test_client()
     yield client
 
