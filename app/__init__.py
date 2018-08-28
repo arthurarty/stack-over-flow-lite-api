@@ -76,4 +76,10 @@ def create_app(config_name):
         output = empty_field
         return jsonify(output), 400
 
+    @app.route('/v1/questions', methods=['GET'])
+    @jwt_required
+    def fetch_all_questions():
+        output = db_conn.query_all("questions")
+        return jsonify(output), 200
+        
     return app
