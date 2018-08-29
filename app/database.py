@@ -55,12 +55,16 @@ class Database:
         return items
     
     def query_all_where_id(self, table_name, table_column, item_id):
-        self.cursor.execute("SELECT row_to_json(row) FROM (SELECT * FROM %s WHERE %s = '%s') row;" % (table_name, table_column, item_id))
+        self.cursor.execute("SELECT row_to_json(row) FROM (SELECT * FROM %s WHERE %s = '%s')row;" % (
+            table_name, table_column, item_id))
         items = self.cursor.fetchall()
         return items
 
-    def update_record(self):
-        pass
+    def update_record(self, table_name, set_column, new_value, where_column, item_id):
+        update_command = "Update %s SET %s = %s WHERE %s = '%s'" % (table_name, 
+        set_column, new_value, where_column, item_id)
+        self.cursor.execute(update_command)
+
 
     def return_id(self, email):
         self.cursor.execute("SELECT user_id FROM users WHERE email = '%s'" % (email))
@@ -98,4 +102,4 @@ class Database:
         return user_id
 
 #db = Database()
-#print(db.return_user_id_question(2))
+# print(db.return_user_id_question(2))

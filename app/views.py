@@ -91,7 +91,8 @@ def fetch_single_question(question_id):
         }
         return jsonify(output), 404
     answers = db_conn.query_all_where_id("answers", "question_id", question_id)
-    return jsonify(output, answers), 200
+    #all_answers = {"answers": "{}" .format(answers)}
+    return jsonify(output, {"answers": answers}), 200
 
 @app.route('/v1/questions/<int:question_id>/delete', methods=['DELETE'])
 @jwt_required
@@ -123,3 +124,19 @@ def add_answer_to_question(question_id):
 
     output = empty_field
     return jsonify(output), 400
+
+@app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>', methods=['PUT'])
+@jwt_required
+def mark_answer_preferred(question_id, answer_id):
+    """method to mark answer as preferred"""
+    output = db_conn.return_user_id_question(question_id)
+    if not output:
+        output = {
+            'message': 'Question Not Found: ' + request.url,
+        }
+        return jsonify(output), 404
+    current_user = get_jwt_identity()
+    if current_user[0] in output:
+        db_conn.update_record("answers", "preferred","TRUE", "answer_id", answer_id)
+        return jsonify({'msg':'Answer marked as preferred'})
+
