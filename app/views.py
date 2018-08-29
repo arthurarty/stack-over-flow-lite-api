@@ -73,6 +73,7 @@ def add_question():
 
 @app.route('/v1/questions', methods=['GET'])
 @jwt_required
+@swag_from('docs/get_questions.yml')
 def fetch_all_questions():
     output = db_conn.query_all("questions")
     return jsonify(output), 200
@@ -112,9 +113,9 @@ def delete_question(question_id):
 @jwt_required
 def add_answer_to_question(question_id):
     """method to add answer to question"""
-    if  request.form['title']:
+    if  request.json.get('title'):
         current_user = get_jwt_identity()
-        new_answer = Answer(question_id, request.form['title'], current_user[0])
+        new_answer = Answer(question_id, request.json.get('title'), current_user[0])
         return new_answer.insert_new_record()
 
     output = empty_field

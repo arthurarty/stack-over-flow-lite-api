@@ -13,6 +13,10 @@ def post_json(client, url, json_dict):
     """Send dictionary json_dict as a json to the specified url """
     return client.post(url, data=json.dumps(json_dict), content_type='application/json')
 
+def post_json_header(client, url, json_dict, headers):
+    """Send dictionary json_dict as a json to the specified url """
+    return client.post(url, data=json.dumps(json_dict), content_type='application/json', headers=headers)
+
 def json_of_response(response):
     """Decode json from response"""
     return json.loads(response.data.decode('utf8'))
@@ -53,8 +57,9 @@ def test_user_login(client):
     assert resp.status_code == 200
 
 def test_add_question(client):
-    resp = client.post('/v1/questions', headers={'Authorization': 'Bearer ' + signin(client)}, 
-    data=dict( title= "big man",))
+    resp = post_json_header(client, '/v1/questions', {
+        "title": "big is big",}, 
+    headers={'Authorization': 'Bearer ' + signin(client)})
     assert resp.status_code == 201
 
 def test_get_questiosn(client):
@@ -66,8 +71,10 @@ def test_get_single_question(client):
     assert b'title' in resp.data
 
 def test_post_answer(client):
-    resp = client.post('/v1/questions/1/answers', headers={'Authorization': 'Bearer ' + signin(client)}, 
-    data=dict( title= "how to do this thing",))
+    resp = post_json_header(client,'/v1/questions/1/answers', {
+        "title": "how to do it."
+    },
+    headers={'Authorization': 'Bearer ' + signin(client)})
     assert resp.status_code == 201
 
 def test_delete_question_by_another_user(client):

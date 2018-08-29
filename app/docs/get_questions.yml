@@ -4,4 +4,10 @@ tags:
     - Questions
 
 security:
-    - TokenHeader: []
+  - JWT:
+      description: Pass in jwt token. i.e Bearer <jwt>
+      type: apiKey
+      scheme: bearer
+      name: Authorization
+      in: header
+      bearerFormat: JWT
