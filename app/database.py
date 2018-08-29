@@ -61,7 +61,7 @@ class Database:
         return items
 
     def update_record(self, table_name, set_column, new_value, where_column, item_id):
-        update_command = "Update %s SET %s = %s WHERE %s = '%s'" % (table_name, 
+        update_command = "Update %s SET %s = '%s' WHERE %s = '%s'" % (table_name, 
         set_column, new_value, where_column, item_id)
         self.cursor.execute(update_command)
 
@@ -95,8 +95,8 @@ class Database:
         delete_command = "DELETE FROM questions WHERE question_id = %s" % (question_id)
         self.cursor.execute(delete_command)
 
-    def return_user_id_question(self, question_id):
-        user_id_command = "SELECT user_id FROM questions WHERE question_id = %s" % (question_id)
+    def return_user_id(self, table_name, where_column, row_id):
+        user_id_command = "SELECT user_id FROM %s WHERE %s = %s" % (table_name, where_column, row_id)
         self.cursor.execute(user_id_command)
         user_id = self.cursor.fetchone()
         return user_id

@@ -100,7 +100,7 @@ def fetch_single_question(question_id):
 def delete_question(question_id):
     """delete question and corresponding answers 
     """
-    output = db_conn.return_user_id_question(question_id)
+    output = db_conn.return_user_id("questions", "question_id", question_id)
     if not output:
         output = {
             'message': 'Question Not Found: ' + request.url,
@@ -120,16 +120,17 @@ def add_answer_to_question(question_id):
     if  request.json.get('title'):
         current_user = get_jwt_identity()
         new_answer = Answer(question_id, request.json.get('title'), current_user[0])
-        return new_answer.insert_new_record()
+        new_answer.insert_new_record()
+        return jsonify({"msg": "Answer added to question"}), 201
 
     output = empty_field
     return jsonify(output), 400
 
-@app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>', methods=['PUT'])
+@app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/mark', methods=['PUT'])
 @jwt_required
 def mark_answer_preferred(question_id, answer_id):
     """method to mark answer as preferred"""
-    output = db_conn.return_user_id_question(question_id)
+    output = db_conn.return_user_id("questions", "question_id", question_id)
     if not output:
         output = {
             'message': 'Question Not Found: ' + request.url,
@@ -137,6 +138,22 @@ def mark_answer_preferred(question_id, answer_id):
         return jsonify(output), 404
     current_user = get_jwt_identity()
     if current_user[0] in output:
-        db_conn.update_record("answers", "preferred","TRUE", "answer_id", answer_id)
-        return jsonify({'msg':'Answer marked as preferred'})
+        value = "True"
+        db_conn.update_record("answers", "preferred", value, "answer_id", answer_id)
+        return jsonify({'msg':'Answer marked as preferred'}), 201
 
+@app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/edit', methods=['PUT'])
+@jwt_required
+def edit_answer(question_id,answer_id):
+    if  request.json.get('title'):
+        """method to mark answer as preferred"""
+        output = db_conn.return_user_id("answers", "answer_id", answer_id)
+        if not output:
+            output = {
+                'message': 'Question Not Found: ' + request.url,
+         }
+            return jsonify(output), 404
+        current_user = get_jwt_identity()
+        if current_user[0] in output:
+            db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
+            return jsonify({'msg':'Answer successfully edited'}), 201
