@@ -1,0 +1,18 @@
+Method to Post Question.
+---
+tags:
+    - Questions
+parameters:
+    - in: body
+      name: body
+      required: true
+      type: string
+      description: input the title of the question.
+security:
+  - JWT:
+      description: Pass in jwt token. i.e Bearer <jwt>
+      type: apiKey
+      scheme: bearer
+      name: Authorization
+      in: header
+      bearerFormat: JWT

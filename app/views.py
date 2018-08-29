@@ -13,7 +13,7 @@ from flasgger import swag_from
 app = create_app()
 
 db_conn = Database()
-empty_field = {'message': 'A field is empty'}
+empty_field = {'msg': 'A field is empty'}
 
 @app.route('/auth/signup', methods=['POST'])
 @swag_from('docs/register.yml')
@@ -22,12 +22,13 @@ def add_user():
     if request.json.get('email') and request.json.get('name') and request.json.get('password'):
         new_user = User(request.json.get('email'), request.json.get('name'), request.json.get('password'))
         output = new_user.insert_new_record()
-        return jsonify(output), 201
+        return jsonify({"msg":"User account successfully created."}), 201
 
     output = empty_field
     return jsonify(output), 400
 
 @app.route('/auth/signin', methods=['POST'])
+@swag_from('docs/sigin.yml')
 def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
@@ -36,9 +37,9 @@ def login():
     password = request.json.get('password')
 
     if not email:
-        return jsonify({"msg": "Missing username parameter"}), 400
+        return jsonify(empty_field), 400
     if not password:
-        return jsonify({"msg": "Missing password parameter"}), 400
+        return jsonify(empty_field), 400
 
     output = ""
     db_conn = Database()
@@ -60,10 +61,11 @@ def login():
 
 @app.route('/v1/questions', methods=['POST'])
 @jwt_required
+@swag_from('docs/post_question.yml')
 def add_question():
     current_user = get_jwt_identity()
-    if request.form['title']:
-        new_question = Question(int(current_user[0]), request.form['title'])
+    if request.json.get('title'):
+        new_question = Question(int(current_user[0]), request.json.get('title'))
         return new_question.insert_new_record()
     
     output = empty_field

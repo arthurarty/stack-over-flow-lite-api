@@ -11,6 +11,6 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     swag= Swagger(app)
     app.config['JWT_SECRET_KEY'] = 'qweBas12@!asBASD'
-    jwt = JWTManager(app)
+    JWTManager(app)
     
     return app

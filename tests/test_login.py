@@ -42,7 +42,7 @@ def test_user_creation(client):
 	"email": "test@test.com",
     "name": "test",
 	"password":"test"})
-    assert b'test@test.com' in resp.data
+    assert b'User account successfully created' in resp.data
     assert resp.status_code == 201
 
 def test_user_login(client):
