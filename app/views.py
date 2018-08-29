@@ -9,6 +9,7 @@ get_jwt_identity
 )
 from app import create_app
 from flasgger import swag_from
+import re
 
 app = create_app()
 
@@ -18,9 +19,28 @@ empty_field = {'msg': 'A field is empty'}
 @app.route('/auth/signup', methods=['POST'])
 @swag_from('docs/register.yml')
 def add_user():
-    """add user adds a user"""
-    if request.json.get('email') and request.json.get('name') and request.json.get('password'):
-        new_user = User(request.json.get('email'), request.json.get('name'), request.json.get('password'))
+    """add user adds a user having validated the inputs."""
+    email = request.json.get('email').strip()
+    name = request.json.get('name').strip()
+    password = request.json.get('password').strip()
+
+    if  email and name and password:
+        if not re.match(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
+            return jsonify({"msg":"Invalid email"}), 400
+
+        if len(name) > 15:
+            return jsonify({"msg": "Name is too long, max 15"}), 400
+
+        if not re.match(r'^[a-z0-9_]+$', name):
+            return jsonify({"msg": "Name can only contain lowercase a-z, 0-9 and _"}), 400
+
+        if len(password) < 8:
+            return jsonify({"msg":"Password too short, min 8 chars"}), 400
+
+        if len(password) > 12:
+            return jsonify({"msg": "Password too long, max 12"}), 400
+
+        new_user = User(email, name, password)
         output = new_user.insert_new_record()
         return jsonify({"msg":"User account successfully created."}), 201
 
@@ -33,8 +53,8 @@ def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
-    email = request.json.get('email')
-    password = request.json.get('password')
+    email = request.json.get('email').strip()
+    password = request.json.get('password').strip()
 
     if not email:
         return jsonify(empty_field), 400
@@ -64,9 +84,10 @@ def login():
 @swag_from('docs/post_question.yml')
 def add_question():
     current_user = get_jwt_identity()
-    if request.json.get('title'):
+    if request.json.get('title').strip() and request.json.get('title'):
         new_question = Question(int(current_user[0]), request.json.get('title'))
-        return new_question.insert_new_record()
+        new_question.insert_new_record()
+        return jsonify({"msg":"Question successfully added."}), 201
     
     output = empty_field
     return jsonify(output), 400
@@ -91,7 +112,6 @@ def fetch_single_question(question_id):
         }
         return jsonify(output), 404
     answers = db_conn.query_all_where_id("answers", "question_id", question_id)
-    #all_answers = {"answers": "{}" .format(answers)}
     return jsonify(output, {"answers": answers}), 200
 
 @app.route('/v1/questions/<int:question_id>/delete', methods=['DELETE'])
@@ -117,7 +137,14 @@ def delete_question(question_id):
 @swag_from('docs/add_answer.yml')
 def add_answer_to_question(question_id):
     """method to add answer to question"""
-    if  request.json.get('title'):
+    title = request.json.get('title').strip()
+    if title:
+        output = db_conn.return_user_id("questions", "question_id", question_id)
+        if not output:
+            output = {
+                'message': 'Question Not Found: ' + request.url,
+            }
+            return jsonify(output), 404
         current_user = get_jwt_identity()
         new_answer = Answer(question_id, request.json.get('title'), current_user[0])
         new_answer.insert_new_record()
@@ -145,7 +172,8 @@ def mark_answer_preferred(question_id, answer_id):
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/edit', methods=['PUT'])
 @jwt_required
 def edit_answer(question_id,answer_id):
-    if  request.json.get('title'):
+    title = request.json.get('title').strip()
+    if  title:
         """method to mark answer as preferred"""
         output = db_conn.return_user_id("answers", "answer_id", answer_id)
         if not output:
@@ -158,3 +186,4 @@ def edit_answer(question_id,answer_id):
             db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
             return jsonify({'msg':'Answer successfully edited'}), 201
         return jsonify({"msg":"No rights to edit answer"}), 401
+    return jsonify(output), 400
