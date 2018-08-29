@@ -157,3 +157,4 @@ def edit_answer(question_id,answer_id):
         if current_user[0] in output:
             db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
             return jsonify({'msg':'Answer successfully edited'}), 201
+        return jsonify({"msg":"No rights to edit answer"}), 401
