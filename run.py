@@ -1,7 +1,9 @@
-import os
-from app import create_app
+from app.views import app
+from flask import redirect
 
-app = create_app()
+@app.route("/")
+def main():
+    return redirect("apidocs/")
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

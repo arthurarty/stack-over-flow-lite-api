@@ -11,6 +11,7 @@ class Answer(Database):
         self.question_id = question_id
         self.title = title
         self.user_id = user_id
+        self.preferred = 'false'
         self.date = str(datetime.now())
 
     def return_question_id(self):
@@ -27,7 +28,7 @@ class Answer(Database):
     
     """method inserts new question into db"""
     def insert_new_record(self):
-        insert_command = "INSERT INTO answers(question_id, user_id, title, created_at) VALUES('%s', '%s', '%s', '%s');" % (self.question_id, self.user_id, self.title, self.date,)
+        insert_command = "INSERT INTO answers(question_id, user_id, title, preferred, created_at) VALUES('%s', '%s', '%s', '%s','%s');" % (self.question_id, self.user_id, self.title, self.preferred, self.date,)
         try:
             self.cursor.execute(insert_command)
             self.cursor.execute("SELECT row_to_json(row) FROM (SELECT * FROM answers WHERE question_id = '%s') row;" % (self.question_id,))
