@@ -28,7 +28,7 @@ def json_of_response(response):
 def signin(client):
     resp = post_json(client, '/auth/signin', { 
 	"email": "test@test.com",
-	"password":"test"})
+	"password":"testAs1v"})
     access = json_of_response(resp)
     access_token = access[1]['access_token']
     return access_token
@@ -40,7 +40,7 @@ def user_two(client):
 	"password":"user"})
     resp = post_json(client, '/auth/signin', { 
 	"email": "user@test.com",
-	"password":"user"})
+	"password":"userIs4a"})
     access = json_of_response(resp)
     access_token = access[1]['access_token']
     return access_token
@@ -49,7 +49,7 @@ def test_user_creation(client):
     resp = post_json(client, '/auth/signup', { 
 	"email": "test@test.com",
     "name": "test",
-	"password":"test"})
+	"password":"testAs1v"})
     assert b'User account successfully created' in resp.data
     assert resp.status_code == 201
 
