@@ -9,9 +9,9 @@ from test_endpoints import (
 def test_long_name(client):
     resp = post_json(client, '/auth/signup', { 
 	"email": "test@test.com",
-    "name": "testismeyoutoo",
+    "name": "testismeyoutoova",
 	"password":"testsfas"})
-    assert b'Name too long' in resp.data
+    assert b'Name is too long' in resp.data
     assert resp.status_code == 400
 
 

@@ -37,7 +37,7 @@ def user_two(client):
     resp = post_json(client, '/auth/signup', { 
 	"email": "user@test.com",
     "name": "user",
-	"password":"user"})
+	"password":"userIs4a"})
     resp = post_json(client, '/auth/signin', { 
 	"email": "user@test.com",
 	"password":"userIs4a"})
