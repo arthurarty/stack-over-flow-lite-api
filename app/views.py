@@ -168,6 +168,7 @@ def mark_answer_preferred(question_id, answer_id):
         value = "True"
         db_conn.update_record("answers", "preferred", value, "answer_id", answer_id)
         return jsonify({'msg':'Answer marked as preferred'}), 201
+    return jsonify({'msg':'Not authorized to mark as preferred'}), 400
 
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/edit', methods=['PUT'])
 @jwt_required
@@ -186,4 +187,4 @@ def edit_answer(question_id,answer_id):
             db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
             return jsonify({'msg':'Answer successfully edited'}), 201
         return jsonify({"msg":"No rights to edit answer"}), 401
-    return jsonify(output), 400
+    return jsonify(empty_field), 400
