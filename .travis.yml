@@ -8,6 +8,6 @@ before_script:
 - psql -c 'create database stack;' -U postgres
 - python database_setup.py
 script:
-- python -m pytest -v --cov tests --cov-report term-missing
+- python -m pytest -v --cov app --cov-report term-missing
 after_success:
 - coveralls
