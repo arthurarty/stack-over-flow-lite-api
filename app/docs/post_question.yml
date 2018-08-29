@@ -11,6 +11,12 @@ parameters:
 responses:
   201:
     description: Question added to database.
+    schema:
+      id: question
+      properties:
+        title:
+          type: string
+          default: how do I login into postgres
   404:
     description: Duplicate question. 
   400:

@@ -1,3 +1,4 @@
+import re
 from flask import Flask, request, jsonify
 from app.models.user import User
 from app.database import Database
@@ -9,7 +10,9 @@ get_jwt_identity
 )
 from app import create_app
 from flasgger import swag_from
-import re
+from werkzeug.security import generate_password_hash, \
+     check_password_hash
+
 
 app = create_app()
 
@@ -22,7 +25,7 @@ def add_user():
     """add user adds a user having validated the inputs."""
     email = request.json.get('email').strip()
     name = request.json.get('name').strip()
-    password = request.json.get('password').strip()
+    password = str(request.json.get('password')).strip()
 
     if  email and name and password:
         if not re.match(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
@@ -54,7 +57,7 @@ def login():
         return jsonify({"msg": "Missing JSON in request"}), 400
 
     email = request.json.get('email').strip()
-    password = request.json.get('password').strip()
+    password = str(request.json.get('password')).strip()
 
     if not email:
         return jsonify(empty_field), 400
@@ -155,6 +158,7 @@ def add_answer_to_question(question_id):
 
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/mark', methods=['PUT'])
 @jwt_required
+@swag_from('docs/mark_answer_preferred.yml')
 def mark_answer_preferred(question_id, answer_id):
     """method to mark answer as preferred"""
     output = db_conn.return_user_id("questions", "question_id", question_id)
@@ -168,10 +172,11 @@ def mark_answer_preferred(question_id, answer_id):
         value = "True"
         db_conn.update_record("answers", "preferred", value, "answer_id", answer_id)
         return jsonify({'msg':'Answer marked as preferred'}), 201
-    return jsonify({'msg':'Not authorized to mark as preferred'}), 400
+    return jsonify({'msg':'Not authorized to mark as preferred'}), 401
 
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/edit', methods=['PUT'])
 @jwt_required
+@swag_from('docs/put_answer.yml')
 def edit_answer(question_id,answer_id):
     title = request.json.get('title').strip()
     if  title:
