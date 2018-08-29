@@ -8,6 +8,13 @@ parameters:
       required: true
       type: string
       description: input the title of the question.
+responses:
+  201:
+    description: Question added to database.
+  404:
+    description: Duplicate question. 
+  400:
+    description: Title is empty.
 security:
   - JWT:
       description: Pass in jwt token. i.e Bearer <jwt>
