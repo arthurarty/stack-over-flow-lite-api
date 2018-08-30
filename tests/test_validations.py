@@ -7,7 +7,7 @@ from test_endpoints import (
 )
 
 def test_long_name(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "test@test.com",
     "name": "testismeyoutoova",
 	"password":"testsfas"})
@@ -16,7 +16,7 @@ def test_long_name(client):
 
 
 def test_invalid_name(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "test@test.com",
     "name": "testAsBA",
 	"password":"testsfas"})
@@ -24,7 +24,7 @@ def test_invalid_name(client):
     assert resp.status_code == 400
 
 def test_short_password(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "test@test.com",
     "name": "test",
 	"password":"test"})
@@ -32,7 +32,7 @@ def test_short_password(client):
     assert resp.status_code == 400
 
 def test_long_password(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "test@test.com",
     "name": "test",
 	"password":"testsfsfdsfsdf"})
@@ -40,11 +40,16 @@ def test_long_password(client):
     assert resp.status_code == 400
 
 def test_invalid_email(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "testtest",
     "name": "test",
 	"password":"testsfsfdsfsdf"})
     assert b'Invalid email' in resp.data
+    assert resp.status_code == 400
+
+def test_empty_post_email(client):
+    resp = post_json(client, '/v1/auth/signup', {
+        "title": " "})
     assert resp.status_code == 400
 
 def test_empty_post_title_question(client):

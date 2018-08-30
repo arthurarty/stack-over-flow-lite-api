@@ -2,6 +2,7 @@
 from app.database import Database
 import psycopg2
 import json
+from flask import jsonify
 
 class User(Database):
 
@@ -18,12 +19,13 @@ class User(Database):
             self.cursor.execute(insert_command)
             self.cursor.execute("SELECT * FROM users WHERE email = '%s';" % (self.email,))
             item = self.cursor.fetchone()
-            return item
+            if item:
+                return jsonify({"msg":"User successfully created"}), 201
         except psycopg2.IntegrityError:
             output = {
                 'message': 'Email address already exists: ',
             }
-            return output
+            return jsonify(output), 400
 
     """deletes users from db"""
     def delete_user_from_db(self):

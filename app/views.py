@@ -53,8 +53,7 @@ def add_user():
             return jsonify({"msg": "Password too long, max 12"}), 400
 
         new_user = User(email, name, generate_password_hash(password))
-        output = new_user.insert_new_record()
-        return jsonify({"msg":"User account successfully created."}), 201
+        return new_user.insert_new_record()
 
     output = empty_field
     return jsonify(output), 400
@@ -65,6 +64,9 @@ def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
+    if not isinstance(request.json.get('email'), str):
+        return jsonify({"msg":"Email must be a string. Example: john@exam.com"}), 400
+        
     email = request.json.get('email').strip()
     password = str(request.json.get('password')).strip()
 
@@ -147,7 +149,7 @@ def delete_question(question_id):
         }
         return jsonify(output), 404
     current_user = get_jwt_identity()
-    if current_user[0] in output:
+    if current_user in output:
         db_conn.delete_question(question_id)
         return jsonify({'message':'Question Deleted'}), 200
     return jsonify({'message':'No rights to delete question'}), 401
@@ -185,7 +187,7 @@ def mark_answer_preferred(question_id, answer_id):
         }
         return jsonify(output), 404
     current_user = get_jwt_identity()
-    if current_user[0] in output:
+    if current_user in output:
         value = "True"
         db_conn.update_record("answers", "preferred", value, "answer_id", answer_id)
         return jsonify({'msg':'Answer marked as preferred'}), 201
@@ -205,7 +207,7 @@ def edit_answer(question_id,answer_id):
          }
             return jsonify(output), 404
         current_user = get_jwt_identity()
-        if current_user[0] in output:
+        if current_user in output:
             db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
             return jsonify({'msg':'Answer successfully edited'}), 201
         return jsonify({"msg":"No rights to edit answer"}), 401
