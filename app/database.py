@@ -5,9 +5,9 @@ from urllib.parse import urlparse
 class Database:
     def __init__(self):
         try:
-            result = urlparse("postgresql://localhost/stack")
-            username = 'postgres'
-            password = 'asP2#fMe'
+            result = urlparse("postgresql://ec2-54-235-160-57.compute-1.amazonaws.com/dedn4467kc4fio")
+            username = 'uxhxwahsdaxfgs'
+            password = 'e6a71b9893c7eb56f60457158a1a06c4f6cadf0eb41fde81ddece6c0e87f0a85'
             database = result.path[1:]
             hostname = result.hostname
             portno = 5432
