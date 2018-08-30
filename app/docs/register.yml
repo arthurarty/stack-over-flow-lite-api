@@ -12,7 +12,7 @@ responses:
   201:
     description: User account successfully created.
     schema:
-      id: user
+      id: register
       properties:
         email:
           type: string

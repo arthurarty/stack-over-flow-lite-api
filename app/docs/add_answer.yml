@@ -16,6 +16,12 @@ parameters:
 responses:
   201:
     description: Answer successfully added to question.
+    schema:
+      id: answer
+      properties:
+        title:
+          type: string
+          default: to login enter username as postgres and password
   400: 
     description: Title not provided.
   404:
