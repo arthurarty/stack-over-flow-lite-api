@@ -88,7 +88,7 @@ def login():
 @swag_from('docs/post_question.yml')
 def add_question():
     current_user = get_jwt_identity()
-    if request.json.get('title').strip() and request.json.get('title'):
+    if str(request.json.get('title')).strip() and request.json.get('title'):
         new_question = Question(int(current_user[0]), request.json.get('title'))
         new_question.insert_new_record()
         return jsonify({"msg":"Question successfully added."}), 201
@@ -141,7 +141,7 @@ def delete_question(question_id):
 @swag_from('docs/add_answer.yml')
 def add_answer_to_question(question_id):
     """method to add answer to question"""
-    title = request.json.get('title').strip()
+    title = str(request.json.get('title')).strip()
     if title:
         output = db_conn.return_user_id("questions", "question_id", question_id)
         if not output:
@@ -179,7 +179,7 @@ def mark_answer_preferred(question_id, answer_id):
 @jwt_required
 @swag_from('docs/put_answer.yml')
 def edit_answer(question_id,answer_id):
-    title = request.json.get('title').strip()
+    title = str(request.json.get('title')).strip()
     if  title:
         """method to mark answer as preferred"""
         output = db_conn.return_user_id("answers", "answer_id", answer_id)
