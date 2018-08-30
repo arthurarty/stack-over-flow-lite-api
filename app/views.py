@@ -17,17 +17,28 @@ app = create_app()
 db_conn = Database()
 empty_field = {'msg': 'A field is empty'}
 
-@app.route('/auth/signup', methods=['POST'])
+@app.route('/v1/auth/signup', methods=['POST'])
 @swag_from('docs/register.yml')
 def add_user():
     """add user adds a user having validated the inputs."""
+    if not isinstance(request.json.get('email'), str):
+        return jsonify({"msg":"Email must be a string. Example: john@exam.com"}), 400
+
     email = request.json.get('email').strip()
+    if not email:
+        return jsonify({"msg":"Email field is empty."}), 400
+
+    if not isinstance(request.json.get('name'), str):
+        return jsonify({"msg":"Name must be a string. Example: johndoe"}), 400
+        
     name = request.json.get('name').strip()
+    if not name:
+        return jsonify({"msg":"Name field is empty"}), 400
     password = str(request.json.get('password')).strip()
 
     if  email and name and password:
         if not re.match(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-            return jsonify({"msg":"Invalid email"}), 400
+            return jsonify({"msg":"Invalid email. Example: john@exam.com"}), 400
 
         if len(name) > 15:
             return jsonify({"msg": "Name is too long, max 15"}), 400
@@ -48,7 +59,7 @@ def add_user():
     output = empty_field
     return jsonify(output), 400
 
-@app.route('/auth/signin', methods=['POST'])
+@app.route('/v1/auth/signin', methods=['POST'])
 @swag_from('docs/sigin.yml')
 def login():
     if not request.is_json:
@@ -93,7 +104,7 @@ def add_question():
         return jsonify({"msg":"Title field is empty"}), 400
 
     if request.json.get('title'):
-        new_question = Question(int(current_user[0]), request.json.get('title'))
+        new_question = Question(int(current_user), request.json.get('title'))
         return new_question.insert_new_record()
         
     else:
@@ -155,7 +166,7 @@ def add_answer_to_question(question_id):
             }
             return jsonify(output), 404
         current_user = get_jwt_identity()
-        new_answer = Answer(question_id, request.json.get('title'), current_user[0])
+        new_answer = Answer(question_id, request.json.get('title'), current_user)
         new_answer.insert_new_record()
         return jsonify({"msg": "Answer added to question"}), 201
 
