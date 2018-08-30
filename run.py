@@ -1,5 +1,5 @@
 from app.views import app
-from flask import redirect, jsonify
+from flask import redirect, jsonify, request
 
 @app.route("/")
 def main():
@@ -20,6 +20,11 @@ def page_not_found(error):
 @app.errorhandler(405)
 def method_not_allowed(error):
     return jsonify({"msg":"Method not allowed"}), 405
+
+@app.before_request
+def check_for_json():
+    if not request.content_type == 'application/json':
+        return jsonify({"msg": "Content type not json"})
 
 if __name__ == '__main__':
     app.run(debug=True)
