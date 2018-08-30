@@ -104,6 +104,7 @@ def add_question():
 @jwt_required
 @swag_from('docs/get_questions.yml')
 def fetch_all_questions():
+    """method fetchs all questions from the database"""
     output = db_conn.query_all("questions")
     return jsonify(output), 200
 
