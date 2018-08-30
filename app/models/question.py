@@ -23,10 +23,9 @@ class Question(Database):
             self.cursor.execute(insert_command)
             self.cursor.execute(" SELECT row_to_json(row) FROM (SELECT * FROM questions WHERE title = '%s') row;" % (self.title,))
             items = self.cursor.fetchone()
-            return jsonify(items), 201
-        except psycopg2.IntegrityError as e:
-            output = { 
-                'message': '%s' % e,
-            }
-            return jsonify(output), 404
+            if items:
+                return jsonify({"msg":"Question Successfully added"}), 201
+            return jsonify({"msg":"Question not added"}), 400
+        except psycopg2.IntegrityError:
+            return jsonify({"msg":"Question already exists in the database"}), 404
     

@@ -1,18 +1,16 @@
 import re
-from flask import Flask, request, jsonify
-from app.models.user import User
+
+from flasgger import swag_from
+from flask import Flask, jsonify, request
+from flask_jwt_extended import (JWTManager, create_access_token,
+                                get_jwt_identity, jwt_required)
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import create_app
 from app.database import Database
 from app.models.answer import Answer
 from app.models.question import Question
-from flask_jwt_extended import (
-JWTManager, jwt_required, create_access_token,
-get_jwt_identity    
-)
-from app import create_app
-from flasgger import swag_from
-from werkzeug.security import generate_password_hash, \
-     check_password_hash
-
+from app.models.user import User
 
 app = create_app()
 
@@ -87,14 +85,20 @@ def login():
 @jwt_required
 @swag_from('docs/post_question.yml')
 def add_question():
+    """method to add question to database"""
     current_user = get_jwt_identity()
-    if request.json.get('title').strip() and request.json.get('title'):
+    title = str(request.json.get('title')).strip()
+
+    if not title:
+        return jsonify({"msg":"Title field is empty"}), 400
+
+    if request.json.get('title'):
         new_question = Question(int(current_user[0]), request.json.get('title'))
-        new_question.insert_new_record()
-        return jsonify({"msg":"Question successfully added."}), 201
-    
-    output = empty_field
-    return jsonify(output), 400
+        return new_question.insert_new_record()
+        
+    else:
+        output = empty_field
+        return jsonify(output), 400
 
 @app.route('/v1/questions', methods=['GET'])
 @jwt_required
