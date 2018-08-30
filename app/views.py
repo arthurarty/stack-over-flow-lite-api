@@ -129,10 +129,7 @@ def fetch_single_question(question_id):
     """
     output = db_conn.query_single_row("questions", "question_id", question_id)
     if not output:
-        output = {
-            'message': 'Question Not Found: ' + request.url,
-        }
-        return jsonify(output), 404
+        return jsonify({'message': 'Question Not Found:'}), 404
     answers = db_conn.query_all_where_id("answers", "question_id", question_id)
     return jsonify(output, {"answers": answers}), 200
 
@@ -144,10 +141,7 @@ def delete_question(question_id):
     """
     output = db_conn.return_user_id("questions", "question_id", question_id)
     if not output:
-        output = {
-            'message': 'Question Not Found: ' + request.url,
-        }
-        return jsonify(output), 404
+        return jsonify({'message': 'Question Not Found:'}), 404
     current_user = get_jwt_identity()
     if current_user in output:
         db_conn.delete_question(question_id)
@@ -163,14 +157,12 @@ def add_answer_to_question(question_id):
     if title:
         output = db_conn.return_user_id("questions", "question_id", question_id)
         if not output:
-            output = {
-                'message': 'Question Not Found: ' + request.url,
-            }
-            return jsonify(output), 404
+            return jsonify({'message': 'Question Not Found:'}), 404
+        
         current_user = get_jwt_identity()
         new_answer = Answer(question_id, request.json.get('title'), current_user)
         new_answer.insert_new_record()
-        return jsonify({"msg": "Answer added to question"}), 201
+        return jsonify({"msg": "Answer added to question" + request.url,}), 201
 
     output = empty_field
     return jsonify(output), 400

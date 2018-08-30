@@ -31,9 +31,3 @@ class User(Database):
     def delete_user_from_db(self):
         delete_command = "DELETE FROM users WHERE email = %s;", (self.email,)
         self.cursor.execute(delete_command)
-
-    def query_single(self):
-        self.cursor.execute("SELECT * FROM users WHERE email = '%s'" % (self.email))
-        items = self.cursor.fetchone()
-        return items
-        

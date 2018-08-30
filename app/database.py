@@ -33,11 +33,8 @@ class Database:
         """method drops a single table from the database"""
         drop_table_command = "DROP TABLE %s" % (table_name)
         self.cursor.execute(drop_table_command)
-
-    def insert_new_record(self):
-        """method to be overriden by classes inheriting"""
-        pass
-
+    
+    
     def query_single(self, email):
         """returns a user given the user's email"""
         self.cursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
