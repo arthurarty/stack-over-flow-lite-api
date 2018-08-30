@@ -52,7 +52,7 @@ def test_empty_post_title_question(client):
         "title": " ",}, 
     headers={'Authorization': 'Bearer ' + signin(client)})
     assert resp.status_code == 400
-    assert b'A field is empty' in resp.data
+    assert b'Title field is empty' in resp.data
 
 def test_empty_post_title_answer(client):
     resp = post_json_header(client,'/v1/questions/1/answers', {
