@@ -56,7 +56,7 @@ def test_user_creation(client):
 def test_user_login(client):
     resp = post_json(client, '/auth/signin', { 
 	"email": "test@test.com",
-	"password":"test"})
+	"password":"testAs1v"})
     assert b'Successful login' in resp.data
     assert resp.status_code == 200
 
