@@ -23,9 +23,8 @@ def method_not_allowed(error):
 
 @app.before_request
 def check_for_json():
-    if not request.content_type == 'application/json' \
-            and '/auth/' in request.path:
-        if not request.content_type == 'application/json' \
+    if not request.content_type == 'application/json':
+        if not request.method == 'GET' \
                 and '/v1/' in request.path:
             return jsonify({"msg": "Content type not json"})
 
