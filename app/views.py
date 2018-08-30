@@ -43,7 +43,7 @@ def add_user():
         if len(password) > 12:
             return jsonify({"msg": "Password too long, max 12"}), 400
 
-        new_user = User(email, name, password)
+        new_user = User(email, name, generate_password_hash(password))
         output = new_user.insert_new_record()
         return jsonify({"msg":"User account successfully created."}), 201
 
@@ -68,14 +68,15 @@ def login():
     db_conn = Database()
     items = db_conn.query_single(email) 
     output = output + str(items)
+    hashed_password = db_conn.return_password(email)
 
-    if email in output and password in output:
-        # Identity can be any data that is json serializable
-        user_id = db_conn.return_id(email)
-        access_token = create_access_token(identity=user_id[0])
-        output = {'message':'Successful login'}
-        access_token_output = {'access_token':"%s" % (access_token)}
-        return jsonify(output, access_token_output), 200
+    if email in output:
+        if check_password_hash(hashed_password[0], password):
+            user_id = db_conn.return_id(email)
+            access_token = create_access_token(identity=user_id[0])
+            output = {'message':'Successful login'}
+            access_token_output = {'access_token':"%s" % (access_token)}
+            return jsonify(output, access_token_output), 200
 
     output = {"msg": "Bad username or password"}
     resp = jsonify(output)

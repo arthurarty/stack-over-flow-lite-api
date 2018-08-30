@@ -70,6 +70,11 @@ class Database:
         self.cursor.execute("SELECT user_id FROM users WHERE email = '%s'" % (email))
         items = self.cursor.fetchall()
         return items
+    
+    def return_password(self, email):
+        self.cursor.execute("SELECT password FROM users WHERE email = '%s'" % (email))
+        item = self.cursor.fetchone()
+        return item
 
     def create_all_tables(self):
         self.create_table('users', "user_id SERIAL PRIMARY KEY, email text " + 
@@ -102,4 +107,6 @@ class Database:
         return user_id
 
 #db = Database()
+#item = db.return_password("arthur@truit.com")
+#print(item[0])
 # print(db.return_user_id_question(2))
