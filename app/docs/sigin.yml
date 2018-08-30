@@ -19,6 +19,6 @@ responses:
           default: john.doe@example.com
         password:
           type: string
-          default: 1232132
+          default: paswaord
   400:
     description: Empty password or email field.
