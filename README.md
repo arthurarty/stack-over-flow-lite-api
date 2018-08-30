@@ -23,7 +23,8 @@ https://stackarty.herokuapp.com
 $git clone https://github.com/arthurarty/stack-over-flow-lite-api
 $cd stack-over-flow-lite-api
 $python database_setup.py
-$python run.py  ```
+$python run.py
+```
 
 Project Overview
 --------------------------------
