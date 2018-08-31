@@ -40,11 +40,12 @@ def fetch_all_questions():
     output = db_conn.query_all("questions")
     return jsonify(output), 200
 
-@app.route('/v1/questions/user', methods=['POST'])
+@app.route('/v1/questions/user', methods=['GET'])
 @jwt_required
 def all_user_questions():
-    output = db_conn.query_all_where_id("questions", "user_id", 2)
-    return jsonify(output), 200
+    current_user = get_jwt_identity()
+    output = db_conn.query_all_where_id("questions", "user_id", int(current_user))
+    return jsonify({"user questions": output}), 200
 
 @app.route('/v1/questions/<int:question_id>/', methods=['GET'])
 @jwt_required
