@@ -15,7 +15,7 @@ from app.models.answer import Answer
 
 @app.route('/v1/questions/<int:question_id>/answers', methods=['POST'])
 @jwt_required
-@swag_from('docs/add_answer.yml')
+@swag_from('../docs/add_answer.yml')
 def add_answer_to_question(question_id):
     """method to add answer to question"""
     title = str(request.json.get('title')).strip()
@@ -37,7 +37,7 @@ def add_answer_to_question(question_id):
 
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/mark', methods=['PUT'])
 @jwt_required
-@swag_from('docs/mark_answer_preferred.yml')
+@swag_from('../docs/mark_answer_preferred.yml')
 def mark_answer_preferred(question_id, answer_id):
     """method to mark answer as preferred"""
     output = db_conn.return_user_id("questions", "question_id", question_id)
@@ -57,7 +57,7 @@ def mark_answer_preferred(question_id, answer_id):
 
 @app.route('/v1/questions/<int:question_id>/answers/<int:answer_id>/edit', methods=['PUT'])
 @jwt_required
-@swag_from('docs/put_answer.yml')
+@swag_from('../docs/put_answer.yml')
 def edit_answer(question_id, answer_id):
     title = str(request.json.get('title')).strip()
     if title:

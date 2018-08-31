@@ -13,7 +13,7 @@ from app.models.question import Question
 
 
 @app.route('/v1/auth/signup', methods=['POST'])
-@swag_from('docs/register.yml')
+@swag_from('../docs/register.yml')
 def add_user():
     """add user adds a user having validated the inputs."""
     if not isinstance(request.json.get('email'), str):
@@ -55,7 +55,7 @@ def add_user():
 
 
 @app.route('/v1/auth/signin', methods=['POST'])
-@swag_from('docs/sigin.yml')
+@swag_from('../docs/sigin.yml')
 def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400

@@ -14,7 +14,7 @@ from app.models.question import Question
 
 @app.route('/v1/questions', methods=['POST'])
 @jwt_required
-@swag_from('docs/post_question.yml')
+#@swag_from('../docs/post_question.yml')
 def add_question():
     """method to add question to database"""
     current_user = get_jwt_identity()
@@ -34,16 +34,21 @@ def add_question():
 
 @app.route('/v1/questions', methods=['GET'])
 @jwt_required
-@swag_from('docs/get_questions.yml')
+#@swag_from('../docs/get_questions.yml')
 def fetch_all_questions():
     """method fetchs all questions from the database"""
     output = db_conn.query_all("questions")
     return jsonify(output), 200
 
+@app.route('/v1/questions/user', methods=['POST'])
+@jwt_required
+def all_user_questions():
+    output = db_conn.query_all_where_id("questions", "user_id", 2)
+    return jsonify(output), 200
 
 @app.route('/v1/questions/<int:question_id>/', methods=['GET'])
 @jwt_required
-@swag_from('docs/get_single_question.yml')
+@swag_from('../docs/get_single_question.yml')
 def fetch_single_question(question_id):
     """fetch_single_questions method returns single question with input being of the type int. 
     """
@@ -56,7 +61,7 @@ def fetch_single_question(question_id):
 
 @app.route('/v1/questions/<int:question_id>/delete', methods=['DELETE'])
 @jwt_required
-@swag_from('docs/delete_question.yml')
+@swag_from('../docs/delete_question.yml')
 def delete_question(question_id):
     """delete question and corresponding answers 
     """
