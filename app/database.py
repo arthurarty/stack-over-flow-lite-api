@@ -34,10 +34,7 @@ class Database:
     def drop_table(self, table_name):
         drop_table_command = "DROP TABLE %s" % (table_name)
         self.cursor.execute(drop_table_command)
-
-    """methods to be overriden by classes inheriting"""
-    def insert_new_record(self):
-        pass
+    
 
     def query_single(self, email):
         self.cursor.execute("SELECT * FROM users WHERE email = '%s'" % (email))
