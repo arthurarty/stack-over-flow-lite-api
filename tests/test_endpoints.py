@@ -26,7 +26,7 @@ def json_of_response(response):
     return json.loads(response.data.decode('utf8'))
 
 def signin(client):
-    resp = post_json(client, '/auth/signin', { 
+    resp = post_json(client, '/v1/auth/signin', { 
 	"email": "test@test.com",
 	"password":"testAs1v"})
     access = json_of_response(resp)
@@ -34,11 +34,11 @@ def signin(client):
     return access_token
 
 def user_two(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "user@test.com",
     "name": "user",
 	"password":"userIs4a"})
-    resp = post_json(client, '/auth/signin', { 
+    resp = post_json(client, '/v1/auth/signin', { 
 	"email": "user@test.com",
 	"password":"userIs4a"})
     access = json_of_response(resp)
@@ -46,15 +46,23 @@ def user_two(client):
     return access_token
 
 def test_user_creation(client):
-    resp = post_json(client, '/auth/signup', { 
+    resp = post_json(client, '/v1/auth/signup', { 
 	"email": "test@test.com",
     "name": "test",
 	"password":"testAs1v"})
-    assert b'User account successfully created' in resp.data
+    assert b'User successfully created' in resp.data
     assert resp.status_code == 201
 
+def test_duplicate_user_creation(client):
+    resp = post_json(client, '/v1/auth/signup', { 
+	"email": "test@test.com",
+    "name": "test",
+	"password":"testAs1v"})
+    assert b'Email address already exists' in resp.data
+    assert resp.status_code == 400
+
 def test_user_login(client):
-    resp = post_json(client, '/auth/signin', { 
+    resp = post_json(client, '/v1/auth/signin', { 
 	"email": "test@test.com",
 	"password":"testAs1v"})
     assert b'Successful login' in resp.data

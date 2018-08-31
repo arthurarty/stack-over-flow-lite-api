@@ -1,35 +1,44 @@
 import re
-from flask import Flask, request, jsonify
-from app.models.user import User
+
+from flasgger import swag_from
+from flask import Flask, jsonify, request
+from flask_jwt_extended import (JWTManager, create_access_token,
+                                get_jwt_identity, jwt_required)
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app import create_app
 from app.database import Database
 from app.models.answer import Answer
 from app.models.question import Question
-from flask_jwt_extended import (
-JWTManager, jwt_required, create_access_token,
-get_jwt_identity    
-)
-from app import create_app
-from flasgger import swag_from
-from werkzeug.security import generate_password_hash, \
-     check_password_hash
-
+from app.models.user import User
 
 app = create_app()
 
 db_conn = Database()
 empty_field = {'msg': 'A field is empty'}
 
-@app.route('/auth/signup', methods=['POST'])
+@app.route('/v1/auth/signup', methods=['POST'])
 @swag_from('docs/register.yml')
 def add_user():
     """add user adds a user having validated the inputs."""
+    if not isinstance(request.json.get('email'), str):
+        return jsonify({"msg":"Email must be a string. Example: john@exam.com"}), 400
+
     email = request.json.get('email').strip()
+    if not email:
+        return jsonify({"msg":"Email field is empty."}), 400
+
+    if not isinstance(request.json.get('name'), str):
+        return jsonify({"msg":"Name must be a string. Example: johndoe"}), 400
+        
     name = request.json.get('name').strip()
+    if not name:
+        return jsonify({"msg":"Name field is empty"}), 400
     password = str(request.json.get('password')).strip()
 
     if  email and name and password:
         if not re.match(r'^[a-zA-Z0-9_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
-            return jsonify({"msg":"Invalid email"}), 400
+            return jsonify({"msg":"Invalid email. Example: john@exam.com"}), 400
 
         if len(name) > 15:
             return jsonify({"msg": "Name is too long, max 15"}), 400
@@ -44,18 +53,20 @@ def add_user():
             return jsonify({"msg": "Password too long, max 12"}), 400
 
         new_user = User(email, name, generate_password_hash(password))
-        output = new_user.insert_new_record()
-        return jsonify({"msg":"User account successfully created."}), 201
+        return new_user.insert_new_record()
 
     output = empty_field
     return jsonify(output), 400
 
-@app.route('/auth/signin', methods=['POST'])
+@app.route('/v1/auth/signin', methods=['POST'])
 @swag_from('docs/sigin.yml')
 def login():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
 
+    if not isinstance(request.json.get('email'), str):
+        return jsonify({"msg":"Email must be a string. Example: john@exam.com"}), 400
+        
     email = request.json.get('email').strip()
     password = str(request.json.get('password')).strip()
 
@@ -87,19 +98,26 @@ def login():
 @jwt_required
 @swag_from('docs/post_question.yml')
 def add_question():
+    """method to add question to database"""
     current_user = get_jwt_identity()
-    if str(request.json.get('title')).strip() and request.json.get('title'):
-        new_question = Question(int(current_user[0]), request.json.get('title'))
-        new_question.insert_new_record()
-        return jsonify({"msg":"Question successfully added."}), 201
-    
-    output = empty_field
-    return jsonify(output), 400
+    title = str(request.json.get('title')).strip()
+
+    if not title:
+        return jsonify({"msg":"Title field is empty"}), 400
+
+    if request.json.get('title'):
+        new_question = Question(int(current_user), request.json.get('title'))
+        return new_question.insert_new_record()
+        
+    else:
+        output = empty_field
+        return jsonify(output), 400
 
 @app.route('/v1/questions', methods=['GET'])
 @jwt_required
 @swag_from('docs/get_questions.yml')
 def fetch_all_questions():
+    """method fetchs all questions from the database"""
     output = db_conn.query_all("questions")
     return jsonify(output), 200
 
@@ -111,10 +129,7 @@ def fetch_single_question(question_id):
     """
     output = db_conn.query_single_row("questions", "question_id", question_id)
     if not output:
-        output = {
-            'message': 'Question Not Found: ' + request.url,
-        }
-        return jsonify(output), 404
+        return jsonify({'message': 'Question Not Found:'}), 404
     answers = db_conn.query_all_where_id("answers", "question_id", question_id)
     return jsonify(output, {"answers": answers}), 200
 
@@ -126,12 +141,9 @@ def delete_question(question_id):
     """
     output = db_conn.return_user_id("questions", "question_id", question_id)
     if not output:
-        output = {
-            'message': 'Question Not Found: ' + request.url,
-        }
-        return jsonify(output), 404
+        return jsonify({'message': 'Question Not Found:'}), 404
     current_user = get_jwt_identity()
-    if current_user[0] in output:
+    if current_user in output:
         db_conn.delete_question(question_id)
         return jsonify({'message':'Question Deleted'}), 200
     return jsonify({'message':'No rights to delete question'}), 401
@@ -145,14 +157,12 @@ def add_answer_to_question(question_id):
     if title:
         output = db_conn.return_user_id("questions", "question_id", question_id)
         if not output:
-            output = {
-                'message': 'Question Not Found: ' + request.url,
-            }
-            return jsonify(output), 404
+            return jsonify({'message': 'Question Not Found:'}), 404
+        
         current_user = get_jwt_identity()
-        new_answer = Answer(question_id, request.json.get('title'), current_user[0])
+        new_answer = Answer(question_id, request.json.get('title'), current_user)
         new_answer.insert_new_record()
-        return jsonify({"msg": "Answer added to question"}), 201
+        return jsonify({"msg": "Answer added to question" + request.url,}), 201
 
     output = empty_field
     return jsonify(output), 400
@@ -169,7 +179,7 @@ def mark_answer_preferred(question_id, answer_id):
         }
         return jsonify(output), 404
     current_user = get_jwt_identity()
-    if current_user[0] in output:
+    if current_user in output:
         value = "True"
         db_conn.update_record("answers", "preferred", value, "answer_id", answer_id)
         return jsonify({'msg':'Answer marked as preferred'}), 201
@@ -189,7 +199,7 @@ def edit_answer(question_id,answer_id):
          }
             return jsonify(output), 404
         current_user = get_jwt_identity()
-        if current_user[0] in output:
+        if current_user in output:
             db_conn.update_record("answers", "title", request.json.get('title'), "answer_id", answer_id)
             return jsonify({'msg':'Answer successfully edited'}), 201
         return jsonify({"msg":"No rights to edit answer"}), 401
