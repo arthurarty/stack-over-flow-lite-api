@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/arthurarty/stack-over-flow-lite-api.svg?branch=develop)](https://travis-ci.com/arthurarty/stack-over-flow-lite-api)
-[![Coverage Status](https://coveralls.io/repos/github/arthurarty/stack-over-flow-lite-api/badge.svg?branch=heroku)](https://coveralls.io/github/arthurarty/stack-over-flow-lite-api?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/arthurarty/stack-over-flow-lite-api/badge.svg?branch=develop)](https://coveralls.io/github/arthurarty/stack-over-flow-lite-api?branch=develop)
 [![Maintainability](https://api.codeclimate.com/v1/badges/841bea4173538cb7329b/maintainability)](https://codeclimate.com/github/arthurarty/stack-over-flow-lite-api/maintainability)
 
 ## stack-over-flow-lite-api 
