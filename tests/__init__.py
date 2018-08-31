@@ -1,8 +1,10 @@
+"""file contains methods used in the other tests files"""
 import http.client
 import pytest
 from app.views import app
 import psycopg2
 import json
+from app.database import Database
 
 @pytest.fixture
 def client():
@@ -44,9 +46,3 @@ def user_two(client):
     access = json_of_response(resp)
     access_token = access[1]['access_token']
     return access_token
-
-def create_question(client):
-    resp = post_json_header(client, '/v1/questions', {
-        "title": "question_2",}, 
-    headers={'Authorization': 'Bearer ' + signin(client)})
-    

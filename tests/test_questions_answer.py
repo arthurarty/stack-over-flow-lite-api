@@ -1,6 +1,6 @@
 from app.models.answer import Answer
 from tests import (client, post_json, post_json_header,
- signin, user_two, put_json_header)
+ signin, user_two, put_json_header, delete_users)
 import pytest
 
 def test_is_instance_of_answer():
@@ -39,7 +39,6 @@ def test_delete_question_by_another_user(client):
     resp = client.delete('/v1/questions/1/delete', headers={'Authorization': 'Bearer ' + user_two(client)})
     assert resp.status_code == 401
     assert b'No rights to delete question' in resp.data
-
 
 def test_delete_question(client):
     resp = client.delete('/v1/questions/1/delete', headers={'Authorization': 'Bearer ' + signin(client)})

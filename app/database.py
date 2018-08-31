@@ -101,6 +101,11 @@ class Database:
         self.drop_table("questions")
         self.drop_table("users")
 
+    def delete_any(self, table_name, primary_column, item_id):
+        """method accepts a table name and deletes the item with the specified. """
+        delete_command = "DELETE FROM %s WHERE %s = %s" % (table_name, primary_column, item_id)
+        self.cursor.execute(delete_command)
+
     def delete_question(self, question_id):
         """method deletes question from database"""
         delete_answers = "DELETE FROM answers WHERE question_id = %s" % (question_id)

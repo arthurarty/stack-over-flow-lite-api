@@ -20,4 +20,3 @@ def test_get_questiosn(client):
 def test_get_single_question(client):
     resp = client.get('/v1/questions/1', headers={'Authorization': 'Bearer ' + signin(client)})
     assert b'title' in resp.data
-
