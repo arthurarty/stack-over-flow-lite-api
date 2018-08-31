@@ -8,4 +8,4 @@ def tear_down():
     db = Database()
     db.drop_all_tables()
 
-set_up()
+tear_down()

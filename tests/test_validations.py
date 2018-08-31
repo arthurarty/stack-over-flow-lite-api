@@ -1,10 +1,7 @@
+"""file tests user validations"""
 import pytest
-import json
-from app.views import app
-from test_endpoints import (
-    client, post_json, post_json_header,
-    put_json_header, signin
-)
+from tests import (client, post_json, post_json_header,
+ signin, user_two, put_json_header)
 
 def test_long_name(client):
     resp = post_json(client, '/v1/auth/signup', { 
