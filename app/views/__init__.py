@@ -14,11 +14,11 @@ app = create_app()
 db_conn = Database()
 empty_field = {'msg': 'A field is empty'}
 
-#import auth views
+# import auth views
 from app.views import auth
 
-#import question views. 
+# import question views.
 from app.views import questions
 
-#import answers views
+# import answers views
 from app.views import answers

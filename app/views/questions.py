@@ -11,6 +11,7 @@ from app.views import app
 from app.views import db_conn, empty_field
 from app.models.question import Question
 
+
 @app.route('/v1/questions', methods=['POST'])
 @jwt_required
 @swag_from('docs/post_question.yml')
@@ -20,15 +21,16 @@ def add_question():
     title = str(request.json.get('title')).strip()
 
     if not title:
-        return jsonify({"msg":"Title field is empty"}), 400
+        return jsonify({"msg": "Title field is empty"}), 400
 
     if request.json.get('title'):
         new_question = Question(int(current_user), request.json.get('title'))
         return new_question.insert_new_record()
-        
+
     else:
         output = empty_field
         return jsonify(output), 400
+
 
 @app.route('/v1/questions', methods=['GET'])
 @jwt_required
@@ -37,6 +39,7 @@ def fetch_all_questions():
     """method fetchs all questions from the database"""
     output = db_conn.query_all("questions")
     return jsonify(output), 200
+
 
 @app.route('/v1/questions/<int:question_id>/', methods=['GET'])
 @jwt_required
@@ -50,6 +53,7 @@ def fetch_single_question(question_id):
     answers = db_conn.query_all_where_id("answers", "question_id", question_id)
     return jsonify(output, {"answers": answers}), 200
 
+
 @app.route('/v1/questions/<int:question_id>/delete', methods=['DELETE'])
 @jwt_required
 @swag_from('docs/delete_question.yml')
@@ -62,5 +66,5 @@ def delete_question(question_id):
     current_user = get_jwt_identity()
     if current_user in output:
         db_conn.delete_question(question_id)
-        return jsonify({'message':'Question Deleted'}), 200
-    return jsonify({'message':'No rights to delete question'}), 401
+        return jsonify({'message': 'Question Deleted'}), 200
+    return jsonify({'message': 'No rights to delete question'}), 401

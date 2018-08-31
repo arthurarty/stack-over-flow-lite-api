@@ -4,7 +4,9 @@ from app.database import Database
 import psycopg2
 """Class Answer represents an answer to a question
 """
-class Answer(Database): 
+
+
+class Answer(Database):
 
     def __init__(self, question_id, title, user_id):
         super().__init__()
@@ -25,19 +27,20 @@ class Answer(Database):
 
     def return_answer_title(self):
         return self.title
-    
+
     """method inserts new question into db"""
+
     def insert_new_record(self):
-        insert_command = "INSERT INTO answers(question_id, user_id, title, preferred, created_at) VALUES('%s', '%s', '%s', '%s','%s');" % (self.question_id, self.user_id, self.title, self.preferred, self.date,)
+        insert_command = "INSERT INTO answers(question_id, user_id, title, preferred, created_at) VALUES('%s', '%s', '%s', '%s','%s');" % (
+            self.question_id, self.user_id, self.title, self.preferred, self.date,)
         try:
             self.cursor.execute(insert_command)
-            self.cursor.execute("SELECT row_to_json(row) FROM (SELECT * FROM answers WHERE question_id = '%s') row;" % (self.question_id,))
+            self.cursor.execute(
+                "SELECT row_to_json(row) FROM (SELECT * FROM answers WHERE question_id = '%s') row;" % (self.question_id,))
             items = self.cursor.fetchall()
             return jsonify(items), 201
         except psycopg2.IntegrityError as e:
-            output = { 
+            output = {
                 'message': '%s' % e,
             }
             return jsonify(output), 404
-
-        
