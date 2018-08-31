@@ -34,6 +34,7 @@ Project Overview
 |POST /auth/login |Login a user | |
 |GET /questions |Fetch all questions | |
 |GET /questions/<questionId>|Fetch a specific question|This should come with the all  answers provided so far for the question.
+|GET /questions/user | Fetch all questions for a specific user. | User can only get his questions. 
 |POST /questions|Post a question| |
 |Delete /questions/<questionId>|Delete a question| This endpoint should be available to the author’s author.
 |POST /questions/<questionId>/answers|Post an answer to a question| |
