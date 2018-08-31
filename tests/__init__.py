@@ -44,3 +44,9 @@ def user_two(client):
     access = json_of_response(resp)
     access_token = access[1]['access_token']
     return access_token
+
+def create_question(client):
+    resp = post_json_header(client, '/v1/questions', {
+        "title": "question_2",}, 
+    headers={'Authorization': 'Bearer ' + signin(client)})
+    
